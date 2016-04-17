@@ -9,6 +9,7 @@ auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
+
 def clearTweet(tweetText, result):
 	#----------------------- tweet cleaners ---------------------------
 	reply = re.compile('@[A-z]*')
@@ -21,7 +22,6 @@ def clearTweet(tweetText, result):
 			result+=(word+' ')
 
 	result = re.sub("\n", ".", result)
-	#print(ascii(result))
 
 	return result
 
@@ -36,30 +36,25 @@ def ShortenTweet(Tweet):
 
 
 def Tweet(stringToReplace, replacement):
-	aString = re.sub('"', '', stringToReplace)
+	aString = re.sub('"', '', stringToReplace) # regular expression needs the phrase/word w/o quotes, while search requires them
 	toReplace = re.compile(re.escape(str(aString)), re.IGNORECASE)
-	print(toReplace)
 	tweet = tweepy.Cursor(api.search, q=stringToReplace).items(10)
 
 	for tw in tweet:
 		txt=''
 		tweetText = toReplace.sub(replacement, tw.text)
-		#print(ascii(tweetText))
 		txt = clearTweet(tweetText, txt)
 
 		if (len(txt)>140):
 			ShortenTweet(txt)
-
-		#print(ascii(txt))
 		
 		try:
 			api.update_status(txt.lower())
-			print("Posted a tweet! '", txt, "'")
+			print("Posted a tweet!")	# just for fun
 			time.sleep(240)
 		except tweepy.error.TweepError as te:
 			print (te)
 
 if __name__=="__main__":
-	#Tweet('"гулять по воде"', 'программировать')
 	Tweet(sys.argv[1], sys.argv[2])
 
