@@ -9,7 +9,6 @@ auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
-
 def clearTweet(tweetText, result):
 	#----------------------- tweet cleaners ---------------------------
 	reply = re.compile('@[A-z]*')
@@ -31,14 +30,13 @@ def ShortenTweet(Tweet):
 	Tweet = re.sub(' - ', '-', Tweet)
 
 	while(len(Tweet)>140):
-		while Tweet[-1]!='.':
+		while (Tweet[-1]!='.' and Tweet!=''):
 			Tweet = Tweet[:-1]
 
 
 def Tweet(stringToReplace, replacement):
-	aString = re.sub('"', '', stringToReplace) # regular expression needs the phrase/word w/o quotes, while search requires them
-	toReplace = re.compile(re.escape(str(aString)), re.IGNORECASE)
-	tweet = tweepy.Cursor(api.search, q=stringToReplace).items(10)
+	toReplace = re.compile(re.escape(str(stringToReplace)), re.IGNORECASE)
+	tweet = tweepy.Cursor(api.search, q=('"'+stringToReplace+'"')).items(10) # !CHOOSE HOW MANY TWEETS DO YOU WANT TO POST HERE
 
 	for tw in tweet:
 		txt=''
@@ -50,8 +48,8 @@ def Tweet(stringToReplace, replacement):
 		
 		try:
 			api.update_status(txt.lower())
-			print("Posted a tweet!")	# just for fun
-			time.sleep(240)
+			print("Posted a tweet! '", ascii(txt), "'") #posting in ascii because otherwise posting an emoji will cause a error. doesn't make any sense though, just for checkinng
+			time.sleep(240) # !CHOOSE THE PERIOD OF TWEETING HERE
 		except tweepy.error.TweepError as te:
 			print (te)
 
