@@ -35,8 +35,10 @@ def ShortenTweet(Tweet):
 
 
 def Tweet(stringToReplace, replacement):
+	numbers = sys.argv[3] + sys.argv[4]
+	numbers = re.findall('\d+', numbers)
 	toReplace = re.compile(re.escape(str(stringToReplace)), re.IGNORECASE)
-	tweet = tweepy.Cursor(api.search, q=('"'+stringToReplace+'"')).items(10) # !CHOOSE HOW MANY TWEETS DO YOU WANT TO POST HERE
+	tweet = tweepy.Cursor(api.search, q=('"'+stringToReplace+'"')).items(int(numbers[0])) # !CHOOSE HOW MANY TWEETS DO YOU WANT TO POST HERE
 
 	for tw in tweet:
 		txt=''
@@ -48,11 +50,17 @@ def Tweet(stringToReplace, replacement):
 		
 		try:
 			api.update_status(txt.lower())
-			print("Posted a tweet! '", ascii(txt), "'") #posting in ascii because otherwise posting an emoji will cause a error. doesn't make any sense though, just for checkinng
-			time.sleep(240) # !CHOOSE THE PERIOD OF TWEETING HERE
+			try: 
+				with open('log.txt', 'a') as log:
+					log.write(" \n" + time.asctime() +" :: Posted a tweet: '" + txt + "' ")
+			except UnicodeEncodeError:
+				with open('log.txt', 'a') as log:
+					log.write(" \n" + time.asctime() +" :: Posted a tweet containing an emoji. ") # logging in ascii is no-good for cyrillic, so decided not to log "emoji" tweets at all
+
+			time.sleep(int(numbers[1])) # !CHOOSE THE PERIOD OF TWEETING HERE
 		except tweepy.error.TweepError as te:
-			print (te)
+			with open('log.txt', 'a') as log:
+				log.write(" \n" + time.asctime() +" :: "+ str(te))
 
 if __name__=="__main__":
 	Tweet(sys.argv[1], sys.argv[2])
-
