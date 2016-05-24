@@ -9,12 +9,13 @@ auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
-def clearTweet(tweetText, result):
+def clearTweet(tweetText):
 	#----------------------- tweet cleaners ---------------------------
 	reply = re.compile('@[A-z]*')
 	hashtag = re.compile('#[A-z]*')
 	link = re.compile('https://[a-z, 0-9, ./]*')
 	#------------------------------------------------------------------
+	result = ''
 	for word in tweetText.split():
 		exclusions = (reply.match(word) or word=='RT' or hashtag.match(word) or link.match(word))
 		if not exclusions:
@@ -30,7 +31,7 @@ def ShortenTweet(Tweet):
 	Tweet = re.sub(' - ', '-', Tweet)
 
 	while(len(Tweet)>140):
-		while (Tweet[-1]!='.' and Tweet!=''):
+		while (Tweet[-1]!='.' and len(Tweet)>=1):
 			Tweet = Tweet[:-1]
 
 
@@ -38,12 +39,11 @@ def Tweet(stringToReplace, replacement):
 	numbers = sys.argv[3] + sys.argv[4]
 	numbers = re.findall('\d+', numbers)
 	toReplace = re.compile(re.escape(str(stringToReplace)), re.IGNORECASE)
-	tweet = tweepy.Cursor(api.search, q=('"'+stringToReplace+'"')).items(int(numbers[0])) # !CHOOSE HOW MANY TWEETS DO YOU WANT TO POST HERE
+	tweets = tweepy.Cursor(api.search, q=('"'+stringToReplace+'"')).items(int(numbers[0])) # !CHOOSE HOW MANY TWEETS DO YOU WANT TO POST HERE
 
-	for tw in tweet:
-		txt=''
+	for tw in tweets:
 		tweetText = toReplace.sub(replacement, tw.text)
-		txt = clearTweet(tweetText, txt)
+		txt = clearTweet(tweetText)
 
 		if (len(txt)>140):
 			ShortenTweet(txt)
