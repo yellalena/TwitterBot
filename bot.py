@@ -12,7 +12,7 @@ class Bot:
 		self.api = tweepy.API(auth)
 	
 	def clearTweet(self, tweetText):
-        #----------------------- tweet cleaners ---------------------------
+		#----------------------- tweet cleaners ---------------------------
 		reply = re.compile('@[A-z]*')
 		hashtag = re.compile('#[A-z]*')
 		link = re.compile('https://[a-z, 0-9, ./]*')
