@@ -65,6 +65,5 @@ class Bot:
 					log.write(" \n" + time.asctime() +" :: "+ str(te))
 
 if __name__=="__main__":
-	print(sys.argv[1], sys.argv[2])
 	replacer = Bot()
 	replacer.Tweet(sys.argv[1], sys.argv[2])
